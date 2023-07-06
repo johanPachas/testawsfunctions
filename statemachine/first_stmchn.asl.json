@@ -1,0 +1,49 @@
+{
+    "Comment": "firstStateMachineNew",
+    "StartAt": "Get Data",
+    "States":{
+        "Get Data":{
+            "Type":"Task",
+            "Resource": "${getDataFunctionArn}",
+            "Parameters": {
+                "id.$": "$$.Execution.Input.id",
+                "nombre.$": "$$.Execution.Input.nombre",
+                "edad.$": "$$.Execution.Input.edad",
+                "Bol.$": "$$.Execution.Input.Bol",
+                "apellido.$": "$$.Execution.Input.apellido"
+            },
+            "ResultPath": "$.student",
+            "Next": "Update Data"
+        },
+        "Update Data": {
+            "Type": "Task",
+            "Resource": "${DDBUpdateItem}",
+            "Parameters": {
+                "TableName": "${TableName}",
+                "Key": {
+                    "id": {
+                        "S.$": "$.student.Identificador"
+                    },
+                    "name": {
+                        "S.$": "$.student.Nombre"
+                    }
+                },
+                "ExpressionAttributeValues": {
+                    ":edad": {
+                        "N.$": "$$.Execution.Input.edad"
+                    },
+                    ":Bol": {
+                        "BOOL.$": "$$.Execution.Input.Bol"
+                    },
+                    ":apellido": {
+                        "S.$": "$$.Execution.Input.apellido"
+                    }
+                },
+                "UpdateExpression": "SET Edad=:edad, Booleano=:Bol, Apellido=:apellido",
+                "ReturnValues": "ALL_NEW"
+            },
+            "ResultPath": null,
+            "End": true
+        }
+    }
+}

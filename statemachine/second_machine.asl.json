@@ -1,0 +1,32 @@
+{
+    "Comment": "secondStateMachineR",
+    "StartAt": "Get Data",
+    "States":{
+        "Get Data":{
+            "Type":"Task",
+            "Resource": "${getDataFunctionArn}",
+            "Parameters": {
+                "id.$": "$$.Execution.Input.id",
+                "nombre.$": "$$.Execution.Input.nombre",
+                "edad.$": "$$.Execution.Input.edad",
+                "Bol.$": "$$.Execution.Input.Bol",
+                "apellido.$": "$$.Execution.Input.apellido"
+            },
+            "ResultPath": "$",
+            "Next": "Update Data"
+        },
+        "Update Data": {
+            "Type": "Task",
+            "Resource": "${updateDataFunctionArn}",
+            "Parameters": {
+                "Identificador.$": "$$.Execution.Input.id",
+                "Nombre.$": "$$.Execution.Input.nombre",
+                "edad.$": "$$.Execution.Input.edad",
+                "Bol.$": "$$.Execution.Input.Bol",
+                "apellido.$": "$$.Execution.Input.apellido"
+            },
+            "ResultPath": null,
+            "End": true
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "Comment": "thirdStateMachine",
+    "StartAt": "Get Data",
+    "States":{
+        "Get Data":{
+            "Type":"Task",
+            "Resource": "${getMultiFunctionArn}",
+            "Parameters": {
+                "id.$": "$$.Execution.Input.id",
+                "nombre.$": "$$.Execution.Input.nombre"
+            },
+            "ResultPath": "$",
+            "Next": "Update Data"
+        },
+        "Update Data": {
+            "Type": "Task",
+            "Resource": "${updateMultiFunctionArn}",
+            "Parameters": {
+                "Students.$": "$"
+            },
+            "ResultPath": null,
+            "End": true
+        }
+    }
+}

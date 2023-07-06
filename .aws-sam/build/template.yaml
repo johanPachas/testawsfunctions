@@ -1,0 +1,475 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'testawsfunctions
+
+  Sample SAM Template for testawsfunctions
+
+  '
+Globals:
+  Function:
+    Timeout: 5
+    MemorySize: 128
+Resources:
+  AppSyncServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - appsync.amazonaws.com
+          Action:
+          - sts:AssumeRole
+  GraphQLApi:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: AWSAppSync DynamoDB Example
+      AuthenticationType: AWS_IAM
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: HelloWorldFunction
+      Handler: main.go
+      Runtime: go1.x
+      Architectures:
+      - x86_64
+      Events:
+        CatchAll:
+          Type: Api
+          Properties:
+            Path: /hello
+            Method: GET
+      Environment:
+        Variables:
+          PARAM1: VALUE
+    Metadata:
+      SamResourceId: HelloWorldFunction
+  getDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getDataFunction
+      Handler: main
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          tableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: getDataFunction
+  getFunctionMulti:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: getFunctionMulti
+      Handler: main.go
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          tableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: getFunctionMulti
+  insertDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: insertDataFunction
+      Handler: main.go
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          TableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: insertDataFunction
+  insertFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: insertFunction
+      Handler: main.go
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          TableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: insertFunction
+  deleteDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: deleteDataFunction
+      Handler: main.go
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          TableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: deleteDataFunction
+  updateDataFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updateDataFunction
+      Handler: main.go
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          TableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: updateDataFunction
+  updateMultiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: updateMultiFunction
+      Handler: main.go
+      Runtime: go1.x
+      MemorySize: 512
+      Timeout: 60
+      Policies:
+      - AWSLambdaBasicExecutionRole
+      - DynamoDBCrudPolicy:
+          TableName: Estudiantes2
+      Environment:
+        Variables:
+          TableName: Estudiantes2
+          region:
+            Fn::Sub: ${AWS::Region}
+    Metadata:
+      SamResourceId: updateMultiFunction
+  insertFunctionDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: insertFunctionDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - insertDataFunction
+          - Arn
+  insertMultiDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: insertMultiDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - insertFunction
+          - Arn
+  getMultiDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: getMultiDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - getFunctionMulti
+          - Arn
+  getDataFunctionDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: getDataFunctionDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - getDataFunction
+          - Arn
+  deleteDataFunctionDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: deleteDataFunctionDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - deleteDataFunction
+          - Arn
+  updateDataFunctionDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: updateDataFunctionDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - updateDataFunction
+          - Arn
+  updateMultiFunctionDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Name: updateMultiFunctionDataSource
+      Type: AWS_LAMBDA
+      ServiceRoleArn:
+        Fn::GetAtt:
+        - AppSyncServiceRole
+        - Arn
+      LambdaConfig:
+        LambdaFunctionArn:
+          Fn::GetAtt:
+          - updateMultiFunction
+          - Arn
+  MutationAddResolver:
+    Type: AWS::AppSync::Resolver
+    DependsOn: Schema
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      TypeName: Mutation
+      FieldName: addStudent
+      DataSourceName:
+        Fn::GetAtt:
+        - insertFunctionDataSource
+        - Name
+      RequestMappingTemplate: "#set( $d = $util.dynamodb )\n#set( $values = $d.toMapValues($ctx.args))\n\
+        {\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"invoke\",\n  \
+        \  \"payload\" : {\n        \"Identificador\" : $utils.toJson($context.args.Identificador),\n\
+        \        \"Nombre\": $utils.toJson($context.args.Nombre)\n    }\n}\n"
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+  getMultiResolver:
+    Type: AWS::AppSync::Resolver
+    DependsOn: Schema
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      TypeName: Query
+      FieldName: getMulti
+      DataSourceName:
+        Fn::GetAtt:
+        - getMultiDataSource
+        - Name
+      RequestMappingTemplate: "#set( $d = $util.dynamodb )\n#set( $values = $d.toMapValues($ctx.args))\n\
+        {\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"invoke\",\n  \
+        \  \"payload\" : {\n        \"id\" : $utils.toJson($context.args.id),\n  \
+        \      \"nombre\": $utils.toJson($context.args.nombre)\n    }\n}\n"
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+  MutationMultiResolver:
+    Type: AWS::AppSync::Resolver
+    DependsOn: Schema
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      TypeName: Mutation
+      FieldName: multiAddStudent
+      DataSourceName:
+        Fn::GetAtt:
+        - insertMultiDataSource
+        - Name
+      RequestMappingTemplate: "#set( $d = $util.dynamodb )\n#set( $values = $d.toMapValues($ctx.args))\n\
+        {\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"invoke\",\n  \
+        \  \"payload\" : {\n        \"student\" : $utils.toJson($context.args.students)\n\
+        \    }\n}\n"
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+  MutationUpdateMultiResolver:
+    Type: AWS::AppSync::Resolver
+    DependsOn: Schema
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      TypeName: Mutation
+      FieldName: multiUpdateStudent
+      DataSourceName:
+        Fn::GetAtt:
+        - updateMultiFunctionDataSource
+        - Name
+      RequestMappingTemplate: "#set( $d = $util.dynamodb )\n#set( $values = $d.toMapValues($ctx.args))\n\
+        {\n    \"version\" : \"2017-02-28\",\n    \"operation\" : \"invoke\",\n  \
+        \  \"payload\" : {\n        \"student\" : $utils.toJson($context.args.students)\n\
+        \    }\n}\n"
+      ResponseMappingTemplate: $util.toJson($ctx.result)
+  StoreSettingsLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName:
+        Fn::Sub: /aws/vendedlogs/states/${AWS::StackName}/store-settings
+      RetentionInDays: 3
+  GetUpdateStateMachine:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: ..\..\statemachine\third_machine.asl.json
+      Type: EXPRESS
+      Name: get-update-machine
+      DefinitionSubstitutions:
+        DDBQuery: arn:aws:states:::aws-sdk:dynamodb:query
+        getMultiFunctionArn:
+          Fn::GetAtt:
+          - getFunctionMulti
+          - Arn
+        updateMultiFunctionArn:
+          Fn::GetAtt:
+          - updateMultiFunction
+          - Arn
+      Logging:
+        Destinations:
+        - CloudWatchLogsLogGroup:
+            LogGroupArn:
+              Fn::GetAtt:
+              - StoreSettingsLogs
+              - Arn
+        IncludeExecutionData: true
+        Level: ALL
+      Policies:
+      - LambdaInvokePolicy:
+          FunctionName:
+            Ref: getFunctionMulti
+      - LambdaInvokePolicy:
+          FunctionName:
+            Ref: updateMultiFunction
+      - CloudWatchLogsFullAccess
+  Schema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId:
+        Fn::GetAtt:
+        - GraphQLApi
+        - ApiId
+      Definition: "type Estudiante {\n    Identificador: ID!\n    Nombre: String\n\
+        \    Apellidos: String\n    Edad: String\n    Direccion: String\n    DNI:\
+        \ String\n}\ninput Student {\n    Identificador: ID!\n    Nombre: String\n\
+        \    Apellidos: String\n    Edad: String\n}\ntype Mutation {\n    addStudent(\n\
+        \      Identificador: String!,\n      Nombre: String!,\n      Apellidos: String!,\n\
+        \      Edad: Int!\n    ): Estudiante!\n    multiAddStudent(students: [Student]):\
+        \ Estudiante!\n    multiUpdateStudent(students: [Student]): Estudiante!\n\
+        \    updateStudent(\n      Identificador: String!,\n      Nombre: String!,\n\
+        \      Apellidos: String,\n      Edad: String,\n      Booleano: String,\n\
+        \    ): Estudiante!\n    deleteStudent(\n      Identificador: String!,\n \
+        \     Nombre: String!\n    ): Estudiante!\n}\ntype Query {\n    getDataFunctionReport(id:\
+        \ ID!, nombre: String): Estudiante\n    getMulti(id: ID!, nombre:String):\
+        \ [Estudiante]\n}\nschema {\n    query: Query\n    mutation: Mutation\n}\n"
+Outputs:
+  HelloWorldAPI:
+    Description: API Gateway endpoint URL for Prod environment for First Function
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/
+  HelloWorldFunction:
+    Description: First Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunction
+      - Arn
+  HelloWorldFunctionIamRole:
+    Description: Implicit IAM Role created for Hello World function
+    Value:
+      Fn::GetAtt:
+      - HelloWorldFunctionRole
+      - Arn
+  GraphQLApiARN:
+    Description: The App ID of the GraphQL endpoint.
+    Value:
+      Ref: GraphQLApi
+  GraphQLApiId:
+    Description: The App ID of the GraphQL endpoint.
+    Value:
+      Fn::GetAtt:
+      - GraphQLApi
+      - ApiId
+  GraphQLApiEndpoint:
+    Description: The URL for the GraphQL endpoint.
+    Value:
+      Fn::GetAtt:
+      - GraphQLApi
+      - GraphQLUrl
